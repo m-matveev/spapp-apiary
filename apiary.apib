@@ -1,0 +1,331 @@
+FORMAT: 1A
+
+# simplepayments-app
+
+## Payment Services Collection [/service]
+
+### List All services [GET]
+
+Список платежных сервисов для экрана "Новый платеж" 
+
++ Response 200 (application/json)
+
+        [
+            {
+                "id": "gibdd",
+                "name": "Проверка и оплата штрафов ГИБДД",
+                "image": "https://neonxp.net/img/provider.png",
+                "_links": [
+                    {"href": "/search/gibdd", "rel": "search"}
+                ]
+            },
+            {
+                "id": "fssp",
+                "name": "Проверка и оплата задолженности ФССП",
+                "image": "https://neonxp.net/img/provider.png",
+                "_links": [
+                    {"href": "/search/fssp", "rel": "search"}
+                ]
+            },
+            {
+                "id": "fns",
+                "name": "Проверка и оплата налогов",
+                "image": "https://neonxp.net/img/provider.png",
+                "_links": [
+                    {"href": "/search/fns", "rel": "search"}
+                ]
+            }
+        ]
+
+## Group Поиск задолженностей
+
+### Поиск ГИБДД [POST /search/gibdd]
+
++ Request (application/json)
+
+        {
+            "ctc": "1612123123",
+            "vu": "73УВ123654"
+        }
+    
++ Response 200 (application/json)
+
+        {
+            "car_fines": [
+                {
+                    "uin": "18810116180312243747",
+                    "sum": 500,
+                    "koap_code": "12.9ч.2",
+                    "koap_text": "ПРЕВЫШЕНИЕ УСТАНОВЛЕННОЙ СКОРОСТИ ДВИЖЕНИЯ ТРАНСПОРТНОГО СРЕДСТВА НА ВЕЛИЧИНУ БОЛЕЕ 20, НО НЕ БОЛЕЕ 40 КМ/Ч",
+                    "discount_enabled": true,
+                    "discount_untill": "2018-07-02 23:59:59",
+                    "_links": [
+                        {"href": "/helper/gibdd/division/123", "rel": "division"},
+                        {"href": "/gibdd/images/18810116180312243747", "rel": "images"}
+                    ]
+                },
+                {
+                    "uin": "18810116180312243747",
+                    "sum": 500,
+                    "koap_code": "12.9ч.2",
+                    "koap_text": "ПРЕВЫШЕНИЕ УСТАНОВЛЕННОЙ СКОРОСТИ ДВИЖЕНИЯ ТРАНСПОРТНОГО СРЕДСТВА НА ВЕЛИЧИНУ БОЛЕЕ 20, НО НЕ БОЛЕЕ 40 КМ/Ч",
+                    "discount_enabled": false,
+                    "discount_untill": "2018-07-02 23:59:59",
+                    "_links": [
+                        {"href": "/helper/gibdd/division/123", "rel": "division"},
+                        {"href": "/gibdd/images/18810116180312243747", "rel": "images"}
+                    ]
+                }
+            ], 
+            "vu_fines": [
+                {
+                    "uin": "18810116180312243745",
+                    "sum": 500,
+                    "koap_code": "12.9ч.2",
+                    "koap_text": "ПРЕВЫШЕНИЕ УСТАНОВЛЕННОЙ СКОРОСТИ ДВИЖЕНИЯ ТРАНСПОРТНОГО СРЕДСТВА НА ВЕЛИЧИНУ БОЛЕЕ 20, НО НЕ БОЛЕЕ 40 КМ/Ч",
+                    "discount_enabled": true,
+                    "discount_untill": "2018-07-02 23:59:59",
+                    "_links": [
+                        {"href": "/helper/gibdd/division/123", "rel": "division"},
+                        {"href": "/gibdd/images/18810116180312243747", "rel": "images"}
+                    ]
+                }
+            ]
+        }
+                
+### Поиск ФССП [POST /search/fssp]
+
++ Request (application/json)
+
+        {
+            "region_id": 16,
+            "fio": "Иванов Петр Сергеевич",
+            "birthdate": "1988-06-23"
+        }
+    
++ Response 200 (application/json)
+
+        {
+            "fssp": [
+                {
+                    "uin": "32216008150065046004",
+                    "account": "65046/15/16008-ИП", 
+                    "sum": "23314.97", 
+                    "extraction_kind": "Задолженность по налогам и сборам", 
+                    "region_code": "16", 
+                    "date": "2016-10-31",
+                    "_links": [
+                        {"href": "/helper/fssp/division/16008", "rel": "division"}
+                    ]
+                }
+            ]
+        }
+
+### Поиск ФНС [POST /search/fns]
+
+Тут я очень сильно не уверен по поводу полей в response. 
+Обрати внимание на request и schema, примерно так я вижу реализацию поиска по уин или номеру ип в /search/fssp или /search/gibdd
+
++ Request (application/json)
+
+        {
+            "inn": "156465465465",
+            "doc_index": "123123123"
+        }
+    
++ Response 200 (application/json)
+
+        {
+            "fns" :[
+                {
+                    "uin": "32216008150065046004",
+                    "sum": "23314.97", 
+                    "extraction_kind": "Транспортный налог", 
+                    "region_code": "16", 
+                    "date": "2016-10-31",
+                    "_links": [
+                        {"href": "/helper/fns/division/16008", "rel": "division"}
+                    ]
+                }
+            ]
+        }
+        
+## Group Формы оплаты
+
+### Штрафы ГИБДД [POST /payment/gibdd]
+
++ Request (application/json)
+
+        {
+            "uin": ["18810116180312243747", "18810116180312243759"]
+        }
+    
++ Response 200 (application/json)
+
+        {
+            "order_id": "hash_string",
+            "sum": 1000,
+            "fee": 125,
+            "form_url": "https://service.moneta.ru/assistant.widget?MNT_ID=66271719&MNT_TRANSACTION_ID=5afaacbbef9f7&MNT_CURRENCY_CODE=RUB&MNT_AMOUNT=565.00&MNT_DESCRIPTION=Оплата штрафа ГИБДД&MNT_TEST_MODE=0&MNT_SIGNATURE=e03b22e5d7477be7f296a42a0667ad26&MNT_SUCCESS_URL=https://gos-oplata.ru/fssp-payment/success&MNT_FAIL_URL=https://gos-oplata.ru/fssp-payment/fail&MNT_PAY_SYSTEM=payanyway&MNT_IS_REGULAR=&MNT_FORM_METHOD=POST&followup=true"
+        }
+        
+### Задолженность ФССП [POST /payment/fssp]
+
++ Request (application/json)
+
+        {
+            "uin": ["32216008150065046004"]
+        }
+    
++ Response 200 (application/json)
+
+        {
+            "order_id": "hash_string",
+            "sum": 1000,
+            "fee": 125,
+            "form_url": "https://service.moneta.ru/assistant.widget?MNT_ID=66271719&MNT_TRANSACTION_ID=5afaacbbef9f7&MNT_CURRENCY_CODE=RUB&MNT_AMOUNT=565.00&MNT_DESCRIPTION=Задолженность ФССП&MNT_TEST_MODE=0&MNT_SIGNATURE=e03b22e5d7477be7f296a42a0667ad26&MNT_SUCCESS_URL=https://gos-oplata.ru/fssp-payment/success&MNT_FAIL_URL=https://gos-oplata.ru/fssp-payment/fail&MNT_PAY_SYSTEM=payanyway&MNT_IS_REGULAR=&MNT_FORM_METHOD=POST&followup=true"
+        }
+
+### Налоги [POST /payment/fns]
+
++ Request (application/json)
+
+        {
+            "uin": ["32216008150065046004"]
+        }
+    
++ Response 200 (application/json)
+
+        {
+            "order_id": "hash_string",
+            "sum": 1000,
+            "fee": 125,
+            "form_url": "https://service.moneta.ru/assistant.widget?MNT_ID=66271719&MNT_TRANSACTION_ID=5afaacbbef9f7&MNT_CURRENCY_CODE=RUB&MNT_AMOUNT=565.00&MNT_DESCRIPTION=Оплата штрафа ГИБДД&MNT_TEST_MODE=0&MNT_SIGNATURE=e03b22e5d7477be7f296a42a0667ad26&MNT_SUCCESS_URL=https://gos-oplata.ru/fssp-payment/success&MNT_FAIL_URL=https://gos-oplata.ru/fssp-payment/fail&MNT_PAY_SYSTEM=payanyway&MNT_IS_REGULAR=&MNT_FORM_METHOD=POST&followup=true"
+        }
+        
+## Group JSON SCHEMA
+
+### Поиск ГИБДД [GET /schema/search/gibdd]
+
++ Response 200 (application/json)
+
+        {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "type": "object",
+            "properties": {
+                "ctc": {"type": "string", "option": {"label": "СТС"}},
+                "vu": {"type": "string"}
+            },
+            "anyOf": [{
+                "required" : ["ctc"]
+            }, {
+                "required" : ["vu"]
+            }]
+        }
+
+### Поиск ФССП [GET /schema/search/fssp]
+
++ Response 200 (application/json)
+
+        {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "type": "object",
+            "properties": {
+                "region_id": {
+                    "type": "region"
+                },
+                "fio": {
+                    "type": "string"
+                },
+                "birthdate": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "region_id",
+                "fio",
+                "birthdate"
+            ]
+        }
+        
+### Поиск ФНС [GET /schema/search/fns]
+
+Напиример, в случае с ФССП тут будет:
+            
+            "anyOf": [{
+                "required" : ["region_id", "fio", "birthdate"]
+            }, {
+                "required" : ["номер_ип_для_поиска"]
+            }]
+
++ Response 200 (application/json)
+
+        {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "type": "object",
+            "properties": {
+                "inn": {
+                    "type": "string"
+                },
+                "doc_index": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [{
+                "required" : ["inn"]
+            }, {
+                "required" : ["doc_index"]
+            }]
+        }
+        
+## Group Справочники
+
+### Коды регионов [GET /helper/region]
+
++ Response 200 (application/json)
+
+        [
+            {"id": 77, "name": "Москва"},
+            {"id": 16, "name": "Республика Татарстан (Татарстан)"},
+            {"id": 14, "name": "Республика Саха (Якутия)"}
+        ]
+
+### Подразделениe ГИБДД [GET /helper/gibdd/division/123]
+
++ Response 200 (application/json)
+
+        {
+            "division_id": 123,
+            "name": "Специализированный отдел регистрации и государственного технического осмотра АМТС, экзаменационной работы ЦСН БДД МВД России",
+            "code": "1100103",
+            "address": "г Москва, Ленинградское шоссе, д 59",
+            "post_index": "125195",
+            "region_code": "77",
+            "bik": "044525000",
+            "bank_name": "ГУ Банка России по ЦФО",
+            "rs": "40101810045250010041",
+            "receiver_name": "04731506780 в УФК по г.Москве",
+            "inn": "5040102985",
+            "kpp": "773001001",
+            "oktmo": "45342000",
+            "is_active": true
+        }
+
+### Подразделение ФССП [GET /helper/fssp/division/16008]
+
++ Response 200 (application/json)
+
+        {
+            "code": 16008,
+            "region": 16,
+            "name": "Межрайонный отдел судебных приставов по особо важным исполнительным производствам",
+            "recv_name": "УФК по Республике Адыгея (МОСП УФССП России по Республике Адыгея Л/С 05761829840)",
+            "bank": "ГРКЦ НБ РЕСП. АДЫГЕЯ БАНКА РОССИИ",
+            "cnt": "40302810100001000015",
+            "bik": "047908001",
+            "inn": "0105043869",
+            "kpp": "010545003",
+            "okato": "79401000000",
+            "oktmo": "79701000",
+            "ls": "05761829840"
+        }
