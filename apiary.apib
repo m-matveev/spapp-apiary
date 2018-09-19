@@ -64,7 +64,125 @@ FORMAT: 1A
         
 ## Group Капитальный ремонт
 
+### Schema формы поиска [GET /schema/search/capital_repair.json]
 
++ Response 200 (application/json)
+
+        {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "type": "object",
+            "required": ["region_id", "ls_or_address"],
+            "properties": {
+                "region_id": {
+                    "type": "string",
+                    "label": "Регион",
+                    "placeholder": "Выберите регион",
+                    "meta" : "region"
+                },
+                "ls_or_address": {
+                    "type": "string",
+                    "label": "Лицевой счет или адрес",
+                    "placeholder": "Укажите номер лицевого счета",
+                    "meta" : "ls_or_address"
+                }
+            }
+        }
+
+### Поиск [POST /search/capital_repair]
+
++ Request (application/json)
+
+        [
+            {
+                "document_type": "capital_repair_requisite", 
+                "document_value": {
+                    "region_id": 16,
+                    "ls_or_address_id": 234
+                } 
+            }
+        ]
+
+
++ Response 200 (application/json)
+
+        [
+            {
+                "document_type": "capital_repair_requisite", 
+                "document_value": {
+                    "region_id": 16,
+                    "ls_or_address_id": 234
+                },
+                "accurals": [
+                    {
+                        "uin": "some_our_uin",
+                        "account": "ls_num_here",
+                        "sum": 1321.12,
+                        "date": "2018-01-19 00:00:00",
+                        "description": null,
+                        "additional_fields": {
+                            "operator_name": "Фонд капитального ремонта многоквартирных домов Томской области",
+                            "address": "420094, Казань, ул. Голубятникова 26а, 39",
+                            "floor_square": 55.5,
+                            "tariff": 12
+                        },
+                        "_links": [
+                            {"href": "/helper/capital_repair/division/123", "rel": "division"}
+                        ]
+                    }
+                ]
+            }
+        ]
+        
+### Schema формы оплаты [GET /schema/payment/capital_repair.json]
+
++ Response 200 (application/json)
+
+        {
+            "type": "object",
+            "required": ["uin", "payer_fullname", "payment_sum"],
+            "properties": {
+                "uin": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "payer_fullname": {
+                    "type": "string",
+                    "label": "ФИО плательщика",
+                    "placeholder": "Фамилия Имя Отчество"
+                },
+                "email": {
+                    "type": "string",
+                    "label": "Email для получения квитанции",
+                    "placeholder": "mail@example.com"
+                },
+                "payment_sum": {
+                    "type": "number",
+                    "label": "Сумма оплаты"
+                }
+            }
+        }
+
+### Форма оплаты [POST /payment/capital_repair]
+
++ Request (application/json)
+
+        {
+            "uin": ["some_our_uin"],
+            "payer_fullname": "Андреев Ростислав Анатольевич",
+            "email": "someemail@gmail.com",
+            "payment_sum": 550.2
+        }
+        
++ Response 200 (application/json)
+
+        {
+            "order_id": "hash_string",
+            "sum": 1000,
+            "fee": 125,
+            "form_url": "https://service.moneta.ru/assistant.widget?MNT_ID=66271719&MNT_TRANSACTION_ID=5afaacbbef9f7&MNT_CURRENCY_CODE=RUB&MNT_AMOUNT=565.00&MNT_DESCRIPTION=Задолженность ФССП&MNT_TEST_MODE=0&MNT_SIGNATURE=e03b22e5d7477be7f296a42a0667ad26&MNT_SUCCESS_URL=https://gos-oplata.ru/fssp-payment/success&MNT_FAIL_URL=https://gos-oplata.ru/fssp-payment/fail&MNT_PAY_SYSTEM=payanyway&MNT_IS_REGULAR=&MNT_FORM_METHOD=POST&followup=true"
+        }
 
 ## Group Газоснабжение
 
@@ -98,15 +216,18 @@ FORMAT: 1A
                 "region_id": {
                     "type": "string",
                     "label": "Регион",
+                    "placeholder": "Выберите регион",
                     "meta" : "region"
                 },
                 "provider_id": {
                     "type": "string",
                     "label": "Поставщик",
+                    "placeholder": "Выберите поставщика",
                     "meta" : "provider"
                 },
                 "ls": {
                     "type": "string",
+                    "placeholder": "Укажите номер лицевого счета",
                     "label": "Номер лицевого счета"
                 }
             }
@@ -162,7 +283,7 @@ FORMAT: 1A
 
         {
             "type": "object",
-            "required": ["uin", "payer_fullname", "counter_value", "date", "payment_sum"],
+            "required": ["uin", "payer_fullname", "payment_sum"],
             "properties": {
                 "uin": {
                     "type": "array",
@@ -171,19 +292,28 @@ FORMAT: 1A
                     }
                 },
                 "payer_fullname": {
-                    "type": "string"
+                    "type": "string",
+                    "label": "ФИО плательщика",
+                    "placeholder": "Фамилия Имя Отчество"
                 },
                 "email": {
-                    "type": "string"
+                    "type": "string",
+                    "label": "Email для получения квитанции",
+                    "placeholder": "mail@example.com"
                 },
                 "counter_value": {
-                    "type": "number"
+                    "type": "number",
+                    "label": "Показания счетчика",
+                    "placeholder": "0000,00"
                 },
                 "date": {
-                    "type": "string"
+                    "type": "string",
+                    "label": "На дату",
+                    "placeholder": "00.00.0000"
                 },
                 "payment_sum": {
-                    "type": "number"
+                    "type": "number",
+                    "label": "Сумма оплаты"
                 }
             }
         }
@@ -209,6 +339,151 @@ FORMAT: 1A
             "fee": 125,
             "form_url": "https://service.moneta.ru/assistant.widget?MNT_ID=66271719&MNT_TRANSACTION_ID=5afaacbbef9f7&MNT_CURRENCY_CODE=RUB&MNT_AMOUNT=565.00&MNT_DESCRIPTION=Задолженность ФССП&MNT_TEST_MODE=0&MNT_SIGNATURE=e03b22e5d7477be7f296a42a0667ad26&MNT_SUCCESS_URL=https://gos-oplata.ru/fssp-payment/success&MNT_FAIL_URL=https://gos-oplata.ru/fssp-payment/fail&MNT_PAY_SYSTEM=payanyway&MNT_IS_REGULAR=&MNT_FORM_METHOD=POST&followup=true"
         }
+        
+## Group ЖКХ
+
+### Список поставщиков в регионе [GET /search/jkh/{region_id}]
+
++ Parameters
+    + region_id (nubmer) - ID региона из справочника
+    
++ Response 200 (application/json)
+
+        [
+            {
+                "id": 100500,
+                "name": "УК Уютный Дом"
+            },
+            {
+                "id": 100501,
+                "name": "УК УправГлавСнаб"
+            }
+        ]
+    
+### Schema формы поиска [GET /schema/search/jkh.json]
+
++ Response 200 (application/json)
+
+        {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "type": "object",
+            "required": ["region_id", "provider_id", "ls"],
+            "properties": {
+                "region_id": {
+                    "type": "string",
+                    "label": "Регион",
+                    "placeholder": "Выберите регион",
+                    "meta" : "region"
+                },
+                "provider_id": {
+                    "type": "string",
+                    "label": "Управляющая организация",
+                    "placeholder": "Выберите поставщика",
+                    "meta" : "provider"
+                },
+                "ls": {
+                    "type": "string",
+                    "placeholder": "Укажите номер лицевого счета",
+                    "label": "Номер лицевого счета"
+                }
+            }
+        }
+
+### Поиск [POST /search/jkh]
+
++ Request (application/json)
+
+        [
+            {
+                "document_type": "ls_requisite", 
+                "document_value": {
+                    "region_id": 16,
+                    "provider_id": 234,
+                    "ls": 3123123
+                } 
+            }
+        ]
+
+
++ Response 200 (application/json)
+
+        [
+            {
+                "document_type": "ls_requisite", 
+                "document_value": {
+                    "region_id": 16,
+                    "provider_id": 234,
+                    "ls": 3123123
+                },
+                "accurals": [
+                    {
+                        "uin": "some_our_uin",
+                        "account": "3123123",
+                        "sum": 1321.12,
+                        "date": "2018-01-19 00:00:00",
+                        "description": null,
+                        "additional_fields": {
+                            "address": "420094, Казань, ул. Голубятникова 26а, 39",
+                            "floor_square": 55.5
+                        },
+                        "_links": [
+                            {"href": "/helper/gas/division/123", "rel": "division"}
+                        ]
+                    }
+                ]
+            }
+        ]
+        
+### Schema формы оплаты [GET /schema/payment/jkh.json]
+
++ Response 200 (application/json)
+
+        {
+            "type": "object",
+            "required": ["uin", "payer_fullname", "payment_sum"],
+            "properties": {
+                "uin": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "payer_fullname": {
+                    "type": "string",
+                    "label": "ФИО плательщика",
+                    "placeholder": "Фамилия Имя Отчество"
+                },
+                "email": {
+                    "type": "string",
+                    "label": "Email для получения квитанции",
+                    "placeholder": "mail@example.com"
+                },
+                "payment_sum": {
+                    "type": "number",
+                    "label": "Сумма оплаты"
+                }
+            }
+        }
+
+### Форма оплаты [POST /payment/jkh]
+
++ Request (application/json)
+
+        {
+            "uin": ["some_our_uin"],
+            "payer_fullname": "Андреев Ростислав Анатольевич",
+            "email": "someemail@gmail.com",
+            "payment_sum": 550.2
+        }
+        
++ Response 200 (application/json)
+
+        {
+            "order_id": "hash_string",
+            "sum": 1000,
+            "fee": 125,
+            "form_url": "https://service.moneta.ru/assistant.widget?MNT_ID=66271719&MNT_TRANSACTION_ID=5afaacbbef9f7&MNT_CURRENCY_CODE=RUB&MNT_AMOUNT=565.00&MNT_DESCRIPTION=Задолженность ФССП&MNT_TEST_MODE=0&MNT_SIGNATURE=e03b22e5d7477be7f296a42a0667ad26&MNT_SUCCESS_URL=https://gos-oplata.ru/fssp-payment/success&MNT_FAIL_URL=https://gos-oplata.ru/fssp-payment/fail&MNT_PAY_SYSTEM=payanyway&MNT_IS_REGULAR=&MNT_FORM_METHOD=POST&followup=true"
+        }
 
 ## Group ГИБДД
 
@@ -219,6 +494,11 @@ FORMAT: 1A
         {
             "$schema": "http://json-schema.org/draft-04/schema#",
             "type": "object",
+            "oneOf":[
+                {"required": ["uin"]},
+                {"required": ["vu"]},
+                {"required": ["ctc"]}
+            ],
             "properties": {
                 "uin": {
                     "type": "string",
@@ -320,7 +600,7 @@ FORMAT: 1A
         {
             "$schema": "http://json-schema.org/draft-04/schema#",
             "type": "object",
-            "required": [],
+            "required": ["uin", "payer_fullname"],
             "properties": {
                 "uin": {
                     "type": "array",
@@ -331,7 +611,13 @@ FORMAT: 1A
                 },
                 "payer_fullname": {
                     "type": "string",
-                    "label": "ФИО Водителя"
+                    "label": "ФИО Водителя",
+                    "placeholder": "Фамилия Имя Отчество"
+                },
+                "email": {
+                    "type": "string",
+                    "label": "Email для получения квитанции",
+                    "placeholder": "mail@example.com"
                 }
             }
         }
@@ -363,36 +649,54 @@ FORMAT: 1A
         {
             "$schema": "http://json-schema.org/draft-04/schema#",
             "type": "object",
-            "required": ["document_type", "document_value"],
             "properties": {
-                "document_type": {
+                "region_id": {
                     "type": "string",
-                    "title": "Тип документа",
-                    "emum": ["snils", "passport", "uin", "ip_num"]
+                    "label": "Регион",
+                    "meta": "region"
                 },
-                "document_value": {
+                "fio": {
                     "type": "string",
-                    "title": "Номер и серия документа"
+                    "label": "ФИО"
+                },
+                "birthdate": {
+                    "type": "string",
+                    "label": "Дата рождения",
+                    "pattern": "\\d{2}\\.\\d{2}\\.\\d{4}"
                 }
-            }
+            },
+            "required": [
+                "region_id",
+                "fio",
+                "birthdate"
+            ]
         }
-
 
 ### Поиск [POST /search/fssp]
 
 + Request (application/json)
 
         [
-            {"document_type": "snils", "document_value": "15370742459"},
-            {"document_type": "passport", "document_value": "730867568"}
+            {
+                "document_type": "fssp_requisite", 
+                "document_value": {
+                    "region_id": 15,
+                    "fio": "Иванов Петр Степанович",
+                    "birthdate": "2001.02.10"
+                }
+            }
         ]
     
 + Response 200 (application/json)
 
         [
             {
-                "document_type": "snils",
-                "document_value": "15370742459",
+                "document_type": "fssp_requisite", 
+                "document_value": {
+                    "region_id": 15,
+                    "fio": "Иванов Петр Степанович",
+                    "birthdate": "2001.02.10"
+                },
                 "accurals": [
                     {
                         "uin": "32216008150065046004",
@@ -455,6 +759,29 @@ FORMAT: 1A
 
 ## Group ФНС 
 
+### Schema формы поиска [GET /schema/search/fns.json]
+
++ Response 200 (application/json)
+
+        {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "type": "object",
+            "oneOf":[
+                {"required": ["uin"]},
+                {"required": ["inn"]}
+            ],
+            "properties": {
+                "uin": {
+                    "type": "string",
+                    "label": "УИН"
+                },
+                "inn": {
+                    "type": "string",
+                    "label": "ИНН"
+                }
+            }
+        }
+
 ### Поиск [POST /search/fns]
 
 + Request (application/json)
@@ -484,13 +811,38 @@ FORMAT: 1A
                 ]
             }
         ]
+        
+### Schema формы оплаты [GET /schema/payment/fns.json]
 
-### Налоги [POST /payment/fns]
++ Response 200 (application/json)
+
+        {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "type": "object",
+            "required": ["uin"],
+            "properties": {
+                "uin": {
+                    "type": "array",
+                    "label": "УИН",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "email": {
+                    "type": "string",
+                    "label": "Email для получения квитанции",
+                    "placeholder": "mail@example.com"
+                }
+            }
+        }
+
+### Форма оплаты [POST /payment/fns]
 
 + Request (application/json)
 
         {
-            "uin": ["32216008150065046004"]
+            "uin": ["32216008150065046004"],
+            "email": "asd@mnail.ru"
         }
     
 + Response 200 (application/json)
@@ -544,6 +896,25 @@ FORMAT: 1A
             "code": 16008,
             "region": 16,
             "name": "Межрайонный отдел судебных приставов по особо важным исполнительным производствам",
+            "recv_name": "УФК по Республике Адыгея (МОСП УФССП России по Республике Адыгея Л/С 05761829840)",
+            "bank": "ГРКЦ НБ РЕСП. АДЫГЕЯ БАНКА РОССИИ",
+            "cnt": "40302810100001000015",
+            "bik": "047908001",
+            "inn": "0105043869",
+            "kpp": "010545003",
+            "okato": "79401000000",
+            "oktmo": "79701000",
+            "ls": "05761829840"
+        }
+        
+### Оператор капремонта [GET /helper/capital_repair/division/123]
+
++ Response 200 (application/json)
+
+        {
+            "id": 16008,
+            "region": 16,
+            "name": "Фонд капитального ремонта многоквартирных домов Томской области",
             "recv_name": "УФК по Республике Адыгея (МОСП УФССП России по Республике Адыгея Л/С 05761829840)",
             "bank": "ГРКЦ НБ РЕСП. АДЫГЕЯ БАНКА РОССИИ",
             "cnt": "40302810100001000015",
