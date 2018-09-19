@@ -82,8 +82,7 @@ FORMAT: 1A
                 "ls_or_address": {
                     "type": "string",
                     "label": "Лицевой счет или адрес",
-                    "placeholder": "Укажите номер лицевого счета",
-                    "meta" : "ls_or_address"
+                    "placeholder": "Укажите номер лицевого счета"
                 }
             }
         }
@@ -97,7 +96,7 @@ FORMAT: 1A
                 "document_type": "capital_repair_requisite", 
                 "document_value": {
                     "region_id": 16,
-                    "ls_or_address_id": 234
+                    "ls_or_address": 234
                 } 
             }
         ]
@@ -110,7 +109,7 @@ FORMAT: 1A
                 "document_type": "capital_repair_requisite", 
                 "document_value": {
                     "region_id": 16,
-                    "ls_or_address_id": 234
+                    "ls_or_address": 234
                 },
                 "accurals": [
                     {
@@ -375,11 +374,11 @@ FORMAT: 1A
                     "placeholder": "Выберите регион",
                     "meta" : "region"
                 },
-                "provider_id": {
+                "operator_id": {
                     "type": "string",
                     "label": "Управляющая организация",
                     "placeholder": "Выберите поставщика",
-                    "meta" : "provider"
+                    "meta" : "operator"
                 },
                 "ls": {
                     "type": "string",
@@ -398,7 +397,7 @@ FORMAT: 1A
                 "document_type": "ls_requisite", 
                 "document_value": {
                     "region_id": 16,
-                    "provider_id": 234,
+                    "operator_id": 234,
                     "ls": 3123123
                 } 
             }
@@ -412,7 +411,7 @@ FORMAT: 1A
                 "document_type": "ls_requisite", 
                 "document_value": {
                     "region_id": 16,
-                    "provider_id": 234,
+                    "operator_id": 234,
                     "ls": 3123123
                 },
                 "accurals": [
@@ -756,7 +755,6 @@ FORMAT: 1A
             "form_url": "https://service.moneta.ru/assistant.widget?MNT_ID=66271719&MNT_TRANSACTION_ID=5afaacbbef9f7&MNT_CURRENCY_CODE=RUB&MNT_AMOUNT=565.00&MNT_DESCRIPTION=Задолженность ФССП&MNT_TEST_MODE=0&MNT_SIGNATURE=e03b22e5d7477be7f296a42a0667ad26&MNT_SUCCESS_URL=https://gos-oplata.ru/fssp-payment/success&MNT_FAIL_URL=https://gos-oplata.ru/fssp-payment/fail&MNT_PAY_SYSTEM=payanyway&MNT_IS_REGULAR=&MNT_FORM_METHOD=POST&followup=true"
         }
 
-
 ## Group ФНС 
 
 ### Schema формы поиска [GET /schema/search/fns.json]
@@ -853,7 +851,48 @@ FORMAT: 1A
             "fee": 125,
             "form_url": "https://service.moneta.ru/assistant.widget?MNT_ID=66271719&MNT_TRANSACTION_ID=5afaacbbef9f7&MNT_CURRENCY_CODE=RUB&MNT_AMOUNT=565.00&MNT_DESCRIPTION=Оплата штрафа ГИБДД&MNT_TEST_MODE=0&MNT_SIGNATURE=e03b22e5d7477be7f296a42a0667ad26&MNT_SUCCESS_URL=https://gos-oplata.ru/fssp-payment/success&MNT_FAIL_URL=https://gos-oplata.ru/fssp-payment/fail&MNT_PAY_SYSTEM=payanyway&MNT_IS_REGULAR=&MNT_FORM_METHOD=POST&followup=true"
         }
-        
+
+
+## История оплат [GET /payment/history]
+
++ Response 200 (application/json)
+
+        [
+            {
+                "payment_date": "2018-08-01",
+                "accurals": [
+                    {
+                        "title": "Капитальный ремонт",
+                        "description": "Оплата капитального ремонта ЛС 255654",
+                        "sum": 255.35,
+                        "receipt_url": "https://xn--80aadhgazu0ak9a.xn--p1ai/gibdd-payment/receipt?fine_id=326150"
+                    },
+                    {
+                        "title": "Штраф ГИБДД",
+                        "description": "Оплата штрафа ГИБДД УИН 18810119180119001127 от 19.01.2018",
+                        "sum": 500,
+                        "receipt_url": "https://xn--80aadhgazu0ak9a.xn--p1ai/gibdd-payment/receipt?fine_id=326150"
+                    },
+                ]
+            },
+            {
+                "payment_date": "2018-07-01",
+                "accurals": [
+                    {
+                        "title": "Капитальный ремонт",
+                        "description": "Оплата капитального ремонта ЛС 255654",
+                        "sum": 255.35,
+                        "receipt_url": "https://xn--80aadhgazu0ak9a.xn--p1ai/gibdd-payment/receipt?fine_id=326150"
+                    },
+                    {
+                        "title": "ЖКХ",
+                        "description": "Оплата ЖКХ, ООО УютныйДом ЛС 2566645",
+                        "sum": 3500,
+                        "receipt_url": "https://xn--80aadhgazu0ak9a.xn--p1ai/gibdd-payment/receipt?fine_id=326150"
+                    },
+                ]
+            }
+        ]
 
 ## Group Справочники
 
