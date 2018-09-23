@@ -494,15 +494,10 @@ FORMAT: 1A
             "$schema": "http://json-schema.org/draft-04/schema#",
             "type": "object",
             "oneOf":[
-                {"required": ["uin"]},
                 {"required": ["vu"]},
                 {"required": ["ctc"]}
             ],
             "properties": {
-                "uin": {
-                    "type": "string",
-                    "label": "УИН"
-                },
                 "vu": {
                     "type": "string",
                     "label": "Водительское удостоверение"
